@@ -320,6 +320,23 @@
 			return false;
 		});
 
+		/* Set Retranslation Server */
+		$('button#set_ret_addr_btn').click(function (event) {
+			var data =[
+				{
+					option: 'retranslation_period',
+					value: $('#retranslation_period').val(),
+				},
+				{
+					option: 'retranslation_server',
+					value: $('#retranslation_server').val(),
+				}
+			];
+			socket.emit('set_retrans_server', data);
+			return false;
+		});
+
+
 		/* Profiles */
 		socket.on('node_tuning', function (msg) {
 			$('#set_profile').empty();
@@ -3056,6 +3073,28 @@
 		</div>
 		<div id="env-data-table" class="control-set">
 		</div>
+	</div>
+</div>
+
+<!--Retranslation-->
+<div class="panel collapsing">
+	<div class="panel-header">
+		<h2>Retranslation</h2>
+	</div>
+	<div class="panel-content">
+
+		<div class="label-block">
+			<label for="retranslation_period">Data sending period in seconds</label>
+		</div>
+		<input width="30" type="number" id="retranslation_period" min="0" max="60" value="{{ getOption('retranslation_period') }}">
+
+		<p>
+			<div class="label-block">
+				<label for="retranslation_server">Server  (keep empty for switch off retranslation)</label>
+			</div>
+			<input type="text" id="retranslation_server" maxlength="256" placeholder="http://" value="{{ getOption('retranslation_server') }}"></textarea>
+		</p>
+		<p><button id="set_ret_addr_btn">Save</button></p>
 	</div>
 </div>
 

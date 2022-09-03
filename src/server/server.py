@@ -84,6 +84,7 @@ from Sensors import Sensors  #pylint: disable=import-error
 import RHRace
 from RHRace import StartBehavior, WinCondition, WinStatus, RaceStatus
 from data_export import DataExportManager
+from retranslator import race_current_retranslator
 
 APP = Flask(__name__, static_url_path='/static')
 
@@ -649,7 +650,6 @@ def stop_background_threads():
 #
 # Socket IO Events
 #
-
 @SOCKET_IO.on('connect')
 @catchLogExceptionsWrapper
 def connect_handler():
@@ -2907,6 +2907,14 @@ def on_set_option(data):
         'option': data['option'],
         'value': data['value'],
         })
+
+@SOCKET_IO.on('set_retrans_server')
+@catchLogExceptionsWrapper
+def on_set_retrans_server(data):
+    print(data)
+    for option in data:
+        on_set_option(option)
+
 
 @SOCKET_IO.on('get_race_scheduled')
 @catchLogExceptionsWrapper
@@ -5220,6 +5228,9 @@ gevent.spawn(clock_check_thread_function)  # start thread to monitor system cloc
 import json_endpoints
 
 APP.register_blueprint(json_endpoints.createBlueprint(RHData, Results, RACE, serverInfo, getCurrentProfile))
+
+# Start Retranslate data
+gevent.spawn(race_current_retranslator, RHData, Results, RACE, getCurrentProfile, logger)
 
 @catchLogExceptionsWrapper
 def start(port_val=Config.GENERAL['HTTP_PORT'], argv_arr=None):
